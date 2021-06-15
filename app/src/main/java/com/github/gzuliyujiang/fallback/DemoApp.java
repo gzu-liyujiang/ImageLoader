@@ -18,6 +18,8 @@ import android.content.Context;
 
 import androidx.multidex.MultiDex;
 
+import com.github.gzuliyujiang.imageloader.ImageLoader;
+
 /**
  * @author 贵州山野羡民（1032694760@qq.com）
  * @see androidx.multidex.MultiDexApplication
@@ -29,6 +31,12 @@ public class DemoApp extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        ImageLoader.initInApplication(this);
     }
 
 }

@@ -18,6 +18,8 @@ dependencies {
     implementation androidxLibrary.multidex
     implementation androidxLibrary.appcompat
     implementation library.material
+    //runtimeOnly library.glide
+    runtimeOnly library.universalimageloader
 }
 
 android {
