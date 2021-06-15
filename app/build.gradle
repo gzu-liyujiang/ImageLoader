@@ -19,6 +19,7 @@ dependencies {
     implementation androidxLibrary.appcompat
     implementation library.material
     //runtimeOnly library.glide
+    //runtimeOnly library.picasso
     runtimeOnly library.universalimageloader
 }
 

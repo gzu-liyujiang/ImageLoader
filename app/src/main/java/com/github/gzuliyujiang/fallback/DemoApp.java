@@ -18,7 +18,7 @@ import android.content.Context;
 
 import androidx.multidex.MultiDex;
 
-import com.github.gzuliyujiang.imageloader.ImageLoader;
+import com.github.gzuliyujiang.imageloader.ImageLoaderStrategy;
 
 /**
  * @author 贵州山野羡民（1032694760@qq.com）
@@ -36,7 +36,7 @@ public class DemoApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ImageLoader.initInApplication(this);
+        ImageLoaderStrategy.getDefault().setup(this);
     }
 
 }

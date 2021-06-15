@@ -17,7 +17,8 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.gzuliyujiang.imageloader.ImageLoader;
+import com.github.gzuliyujiang.imageloader.ImageLoaderOption;
+import com.github.gzuliyujiang.imageloader.ImageLoaderStrategy;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ImageView imageView = findViewById(R.id.image_view);
         String url = "https://gitee.com/assets/gitee_8th/mascot.png";
-        ImageLoader.display(imageView, url, android.R.drawable.ic_menu_report_image);
+        ImageLoaderStrategy.getDefault().display(ImageLoaderOption.create(imageView, url).build());
     }
 
 }
