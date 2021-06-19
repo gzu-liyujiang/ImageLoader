@@ -20,6 +20,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.OkHttp3Downloader;
@@ -43,15 +45,15 @@ final class PicassoImpl implements IImageLoader {
     private UUID requestTag;
 
     @Override
-    public void setup(Application application) {
+    public void setup(@NonNull Application application) {
         this.context = application;
         boolean mounted = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
         cacheDir = new File(mounted ? application.getExternalCacheDir() : application.getCacheDir(), "picasso");
     }
 
     @Override
-    public void display(ImageLoaderOption options) {
-        ImageView imageView = (ImageView) options.getViewContainer();
+    public void display(@NonNull ImageLoaderOption option) {
+        ImageView imageView = (ImageView) option.getViewContainer();
         if (imageView == null) {
             return;
         }
@@ -60,31 +62,31 @@ final class PicassoImpl implements IImageLoader {
                 .downloader(new OkHttp3Downloader(cacheDir))
                 .memoryCache(new LruCache(context))
                 .build();
-        if (TextUtils.isEmpty(options.getUrl())) {
-            if (options.getDrawableRes() != -1) {
+        if (TextUtils.isEmpty(option.getUrl())) {
+            if (option.getDrawableRes() != -1) {
                 return;
             }
-            requestCreator = picasso.load(options.getDrawableRes());
+            requestCreator = picasso.load(option.getDrawableRes());
         } else {
-            requestCreator = picasso.load(options.getUrl());
+            requestCreator = picasso.load(option.getUrl());
         }
         requestTag = UUID.randomUUID();
         requestCreator.tag(requestTag);
         requestCreator.config(Bitmap.Config.RGB_565);
-        if (options.getDrawableRes() != -1) {
+        if (option.getDrawableRes() != -1) {
             requestCreator.networkPolicy(NetworkPolicy.NO_STORE);
         }
-        if (options.getPlaceholderRes() != -1) {
-            requestCreator.placeholder(options.getPlaceholderRes());
-            requestCreator.error(options.getPlaceholderRes());
+        if (option.getPlaceholderRes() != -1) {
+            requestCreator.placeholder(option.getPlaceholderRes());
+            requestCreator.error(option.getPlaceholderRes());
         }
-        if (options.getImageSize() != null) {
-            requestCreator.resize(options.getImageSize().getWidth(), options.getImageSize().getHeight());
+        if (option.getImageSize() != null) {
+            requestCreator.resize(option.getImageSize().getWidth(), option.getImageSize().getHeight());
         }
-        if (options.getImageRadius() > 0) {
+        if (option.getImageRadius() > 0) {
             requestCreator.transform(new PicassoCornerTrans());
         }
-        if (options.isCircle()) {
+        if (option.isCircle()) {
             requestCreator.transform(new PicassoCircleTrans());
         }
         requestCreator.into(imageView);

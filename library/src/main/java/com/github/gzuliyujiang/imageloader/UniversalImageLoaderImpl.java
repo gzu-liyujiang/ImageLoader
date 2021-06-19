@@ -18,6 +18,8 @@ import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -29,13 +31,14 @@ import java.io.File;
 
 /**
  * 参见 https://github.com/nostra13/Android-Universal-Image-Loader
- * <p>
- * Created by liyujiang on 2020/04/20 11:17
+ *
+ * @author 贵州山野羡民（1032694760@qq.com）
+ * @since 2020/04/20 11:17
  */
 final class UniversalImageLoaderImpl implements IImageLoader {
 
     @Override
-    public void setup(Application application) {
+    public void setup(@NonNull Application application) {
         ImageLoader imageLoader = ImageLoader.getInstance();
         if (!imageLoader.isInited()) {
             //IllegalStateException: ImageLoader must be init with configuration before using
@@ -44,42 +47,42 @@ final class UniversalImageLoaderImpl implements IImageLoader {
     }
 
     @Override
-    public void display(ImageLoaderOption options) {
-        ImageView imageView = (ImageView) options.getViewContainer();
+    public void display(@NonNull ImageLoaderOption option) {
+        ImageView imageView = (ImageView) option.getViewContainer();
         if (imageView == null) {
             return;
         }
         DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
         builder.bitmapConfig(Bitmap.Config.RGB_565);
         builder.cacheInMemory(true);
-        if (options.getPlaceholderRes() != -1) {
-            builder.showImageOnLoading(options.getPlaceholderRes());
-            builder.showImageOnFail(options.getPlaceholderRes());
-            builder.showImageForEmptyUri(options.getPlaceholderRes());
+        if (option.getPlaceholderRes() != -1) {
+            builder.showImageOnLoading(option.getPlaceholderRes());
+            builder.showImageOnFail(option.getPlaceholderRes());
+            builder.showImageForEmptyUri(option.getPlaceholderRes());
         }
-        if (options.getImageSize() != null) {
+        if (option.getImageSize() != null) {
             BitmapFactory.Options decodingOptions = new BitmapFactory.Options();
-            decodingOptions.outWidth = options.getImageSize().getWidth();
-            decodingOptions.outHeight = options.getImageSize().getHeight();
+            decodingOptions.outWidth = option.getImageSize().getWidth();
+            decodingOptions.outHeight = option.getImageSize().getHeight();
             builder.decodingOptions(decodingOptions);
         }
-        if (options.getImageRadius() > 0) {
-            builder.displayer(new RoundedBitmapDisplayer(options.getImageRadius()));
-        } else if (options.isCircle()) {
+        if (option.getImageRadius() > 0) {
+            builder.displayer(new RoundedBitmapDisplayer(option.getImageRadius()));
+        } else if (option.isCircle()) {
             builder.displayer(new CircleBitmapDisplayer());
         } else {
             builder.displayer(new SimpleBitmapDisplayer());
         }
         String imageUrl;
-        if (TextUtils.isEmpty(options.getUrl())) {
-            if (options.getDrawableRes() != -1) {
+        if (TextUtils.isEmpty(option.getUrl())) {
+            if (option.getDrawableRes() != -1) {
                 return;
             }
             // 加载res/drawable参阅 https://blog.csdn.net/shaw1994/article/details/47223133
-            imageUrl = "drawable://" + options.getDrawableRes();
+            imageUrl = "drawable://" + option.getDrawableRes();
             builder.cacheOnDisk(false);
         } else {
-            imageUrl = options.getUrl();
+            imageUrl = option.getUrl();
             builder.cacheOnDisk(true);
         }
         // NoSuchFieldException: No field mMaxWidth in class Landroid/widget/ImageView;...

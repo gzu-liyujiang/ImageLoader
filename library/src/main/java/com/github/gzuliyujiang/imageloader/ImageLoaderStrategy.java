@@ -15,8 +15,11 @@ package com.github.gzuliyujiang.imageloader;
 
 import android.app.Application;
 
+import androidx.annotation.NonNull;
+
 /**
- * Created by liyujiang on 2020/6/22.
+ * @author 贵州山野羡民（1032694760@qq.com）
+ * @since 2020/6/22
  */
 public class ImageLoaderStrategy implements IImageLoader {
     private static final String MESSAGE = "Please add dependency `runtimeOnly 'com.github.bumptech.glide:glide:xxx'`" +
@@ -54,12 +57,12 @@ public class ImageLoaderStrategy implements IImageLoader {
     }
 
     @Override
-    public void setup(Application application) {
+    public void setup(@NonNull Application application) {
         getDefault().setup(application);
     }
 
     @Override
-    public <T> void display(ImageLoaderOption options) {
+    public void display(@NonNull ImageLoaderOption options) {
         getDefault().display(options);
     }
 

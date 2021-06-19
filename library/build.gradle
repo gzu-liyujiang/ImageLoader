@@ -16,7 +16,6 @@ apply from: "${rootDir}/gradle/publish.gradle"
 
 dependencies {
     implementation androidxLibrary.annotation
-    implementation library.Logger
     compileOnly library.glide
     compileOnly library.picasso
     compileOnly library.universalimageloader

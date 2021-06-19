@@ -22,6 +22,8 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.Transformation;
@@ -35,50 +37,51 @@ import java.util.concurrent.Executors;
 
 /**
  * 参见 https://github.com/bumptech/glide
- * <p>
- * Created by liyujiang on 2018/8/28 14:56
+ *
+ * @author 贵州山野羡民（1032694760@qq.com）
+ * @since 2018/8/28 14:56
  */
 final class GlideImpl implements IImageLoader {
     private Context context;
 
     @Override
-    public void setup(Application application) {
+    public void setup(@NonNull Application application) {
         this.context = application;
     }
 
     @SuppressLint("CheckResult")
     @Override
-    public void display(ImageLoaderOption options) {
-        ImageView imageView = (ImageView) options.getViewContainer();
+    public void display(@NonNull ImageLoaderOption option) {
+        ImageView imageView = (ImageView) option.getViewContainer();
         if (imageView == null) {
             return;
         }
         RequestBuilder<?> builder = Glide.with(imageView).asBitmap();
-        if (TextUtils.isEmpty(options.getUrl())) {
-            if (options.getDrawableRes() != -1) {
+        if (TextUtils.isEmpty(option.getUrl())) {
+            if (option.getDrawableRes() != -1) {
                 return;
             }
-            builder.load(options.getDrawableRes());
+            builder.load(option.getDrawableRes());
         } else {
-            builder.load(options.getUrl());
+            builder.load(option.getUrl());
         }
         RequestOptions requestOptions = new RequestOptions();
-        if (options.getDrawableRes() != -1) {
+        if (option.getDrawableRes() != -1) {
             requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
         }
         requestOptions.skipMemoryCache(false);
-        if (options.getPlaceholderRes() != -1) {
-            requestOptions.placeholder(options.getPlaceholderRes());
-            requestOptions.fallback(options.getPlaceholderRes());
+        if (option.getPlaceholderRes() != -1) {
+            requestOptions.placeholder(option.getPlaceholderRes());
+            requestOptions.fallback(option.getPlaceholderRes());
         }
-        if (options.getImageSize() != null) {
-            requestOptions.override(options.getImageSize().getWidth(), options.getImageSize().getHeight());
+        if (option.getImageSize() != null) {
+            requestOptions.override(option.getImageSize().getWidth(), option.getImageSize().getHeight());
         }
         ArrayList<Transformation<Bitmap>> list = new ArrayList<>();
-        if (options.getImageRadius() > 0) {
-            list.add(new RoundedCorners(options.getImageRadius()));
+        if (option.getImageRadius() > 0) {
+            list.add(new RoundedCorners(option.getImageRadius()));
         }
-        if (options.isCircle()) {
+        if (option.isCircle()) {
             list.add(new GlideCircleTrans());
         }
         if (list.size() > 0) {
