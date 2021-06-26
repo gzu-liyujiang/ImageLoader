@@ -16,23 +16,19 @@ package com.github.gzuliyujiang.imageloader;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.load.Transformation;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
 /**
@@ -51,44 +47,20 @@ final class GlideImpl implements IImageLoader {
 
     @SuppressLint("CheckResult")
     @Override
-    public void display(@NonNull ImageLoaderOption option) {
-        ImageView imageView = (ImageView) option.getViewContainer();
-        if (imageView == null) {
-            return;
-        }
+    public <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder) {
         RequestBuilder<?> builder = Glide.with(imageView).asBitmap();
-        if (TextUtils.isEmpty(option.getUrl())) {
-            if (option.getDrawableRes() != -1) {
-                return;
-            }
-            builder.load(option.getDrawableRes());
+        if (imageSource instanceof Integer) {
+            builder.load((Integer) imageSource);
         } else {
-            builder.load(option.getUrl());
+            builder.load(imageSource.toString());
         }
         RequestOptions requestOptions = new RequestOptions();
-        if (option.getDrawableRes() != -1) {
+        if (imageSource instanceof Integer) {
             requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
         }
         requestOptions.skipMemoryCache(false);
-        if (option.getPlaceholderRes() != -1) {
-            requestOptions.placeholder(option.getPlaceholderRes());
-            requestOptions.fallback(option.getPlaceholderRes());
-        }
-        if (option.getImageSize() != null) {
-            requestOptions.override(option.getImageSize().getWidth(), option.getImageSize().getHeight());
-        }
-        ArrayList<Transformation<Bitmap>> list = new ArrayList<>();
-        if (option.getImageRadius() > 0) {
-            list.add(new RoundedCorners(option.getImageRadius()));
-        }
-        if (option.isCircle()) {
-            list.add(new GlideCircleTrans());
-        }
-        if (list.size() > 0) {
-            //noinspection unchecked
-            Transformation<Bitmap>[] transformations = list.toArray(new Transformation[0]);
-            requestOptions.transform(transformations);
-        }
+        requestOptions.placeholder(placeholder);
+        requestOptions.fallback(placeholder);
         builder.apply(requestOptions).into(imageView);
     }
 

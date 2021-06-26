@@ -14,17 +14,14 @@ package com.github.gzuliyujiang.imageloader;
 
 import android.app.Application;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.text.TextUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.CircleBitmapDisplayer;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 import java.io.File;
@@ -47,42 +44,21 @@ final class UniversalImageLoaderImpl implements IImageLoader {
     }
 
     @Override
-    public void display(@NonNull ImageLoaderOption option) {
-        ImageView imageView = (ImageView) option.getViewContainer();
-        if (imageView == null) {
-            return;
-        }
+    public <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder) {
         DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
         builder.bitmapConfig(Bitmap.Config.RGB_565);
         builder.cacheInMemory(true);
-        if (option.getPlaceholderRes() != -1) {
-            builder.showImageOnLoading(option.getPlaceholderRes());
-            builder.showImageOnFail(option.getPlaceholderRes());
-            builder.showImageForEmptyUri(option.getPlaceholderRes());
-        }
-        if (option.getImageSize() != null) {
-            BitmapFactory.Options decodingOptions = new BitmapFactory.Options();
-            decodingOptions.outWidth = option.getImageSize().getWidth();
-            decodingOptions.outHeight = option.getImageSize().getHeight();
-            builder.decodingOptions(decodingOptions);
-        }
-        if (option.getImageRadius() > 0) {
-            builder.displayer(new RoundedBitmapDisplayer(option.getImageRadius()));
-        } else if (option.isCircle()) {
-            builder.displayer(new CircleBitmapDisplayer());
-        } else {
-            builder.displayer(new SimpleBitmapDisplayer());
-        }
+        builder.showImageOnLoading(placeholder);
+        builder.showImageOnFail(placeholder);
+        builder.showImageForEmptyUri(placeholder);
+        builder.displayer(new SimpleBitmapDisplayer());
         String imageUrl;
-        if (TextUtils.isEmpty(option.getUrl())) {
-            if (option.getDrawableRes() != -1) {
-                return;
-            }
+        if (imageSource instanceof Integer) {
             // 加载res/drawable参阅 https://blog.csdn.net/shaw1994/article/details/47223133
-            imageUrl = "drawable://" + option.getDrawableRes();
+            imageUrl = "drawable://" + imageSource;
             builder.cacheOnDisk(false);
         } else {
-            imageUrl = option.getUrl();
+            imageUrl = imageSource.toString();
             builder.cacheOnDisk(true);
         }
         // NoSuchFieldException: No field mMaxWidth in class Landroid/widget/ImageView;...

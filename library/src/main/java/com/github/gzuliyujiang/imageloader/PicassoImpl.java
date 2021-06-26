@@ -17,9 +17,9 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import com.squareup.picasso.LruCache;
@@ -52,43 +52,25 @@ final class PicassoImpl implements IImageLoader {
     }
 
     @Override
-    public void display(@NonNull ImageLoaderOption option) {
-        ImageView imageView = (ImageView) option.getViewContainer();
-        if (imageView == null) {
-            return;
-        }
+    public <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder) {
         RequestCreator requestCreator;
         picasso = new com.squareup.picasso.Picasso.Builder(context)
                 .downloader(new OkHttp3Downloader(cacheDir))
                 .memoryCache(new LruCache(context))
                 .build();
-        if (TextUtils.isEmpty(option.getUrl())) {
-            if (option.getDrawableRes() != -1) {
-                return;
-            }
-            requestCreator = picasso.load(option.getDrawableRes());
+        if (imageSource instanceof Integer) {
+            requestCreator = picasso.load((Integer) imageSource);
         } else {
-            requestCreator = picasso.load(option.getUrl());
+            requestCreator = picasso.load(imageSource.toString());
         }
         requestTag = UUID.randomUUID();
         requestCreator.tag(requestTag);
-        requestCreator.config(Bitmap.Config.RGB_565);
-        if (option.getDrawableRes() != -1) {
+        if (imageSource instanceof Integer) {
             requestCreator.networkPolicy(NetworkPolicy.NO_STORE);
         }
-        if (option.getPlaceholderRes() != -1) {
-            requestCreator.placeholder(option.getPlaceholderRes());
-            requestCreator.error(option.getPlaceholderRes());
-        }
-        if (option.getImageSize() != null) {
-            requestCreator.resize(option.getImageSize().getWidth(), option.getImageSize().getHeight());
-        }
-        if (option.getImageRadius() > 0) {
-            requestCreator.transform(new PicassoCornerTrans());
-        }
-        if (option.isCircle()) {
-            requestCreator.transform(new PicassoCircleTrans());
-        }
+        requestCreator.config(Bitmap.Config.RGB_565);
+        requestCreator.placeholder(placeholder);
+        requestCreator.error(placeholder);
         requestCreator.into(imageView);
     }
 

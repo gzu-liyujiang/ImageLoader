@@ -14,13 +14,16 @@
 package com.github.gzuliyujiang.imageloader;
 
 import android.app.Application;
+import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 /**
  * @author 贵州山野羡民（1032694760@qq.com）
  * @since 2020/6/22
  */
+@SuppressWarnings("unused")
 public class ImageLoaderStrategy implements IImageLoader {
     private static final String MESSAGE = "Please add dependency `runtimeOnly 'com.github.bumptech.glide:glide:xxx'`" +
             " or `runtimeOnly 'com.squareup.picasso:picasso:xxx'` in your app/build.gradle";
@@ -62,8 +65,8 @@ public class ImageLoaderStrategy implements IImageLoader {
     }
 
     @Override
-    public void display(@NonNull ImageLoaderOption options) {
-        getDefault().display(options);
+    public <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder) {
+        getDefault().display(imageView, imageSource, placeholder);
     }
 
     @Override

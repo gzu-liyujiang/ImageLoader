@@ -14,7 +14,9 @@
 package com.github.gzuliyujiang.imageloader;
 
 import android.app.Application;
+import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 /**
@@ -35,7 +37,7 @@ public interface IImageLoader {
 
     void setup(@NonNull Application application);
 
-    void display(@NonNull ImageLoaderOption option);
+    <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder);
 
     void pause();
 
