@@ -16,9 +16,6 @@ package com.github.gzuliyujiang.imageloader;
 import android.app.Application;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-
 /**
  * @author 贵州山野羡民（1032694760@qq.com）
  * @since 2020/6/22
@@ -60,12 +57,12 @@ public class ImageLoaderStrategy implements IImageLoader {
     }
 
     @Override
-    public void setup(@NonNull Application application) {
+    public void setup(Application application) {
         getDefault().setup(application);
     }
 
     @Override
-    public <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder) {
+    public <T> void display(ImageView imageView, T imageSource, int placeholder) {
         getDefault().display(imageView, imageSource, placeholder);
     }
 

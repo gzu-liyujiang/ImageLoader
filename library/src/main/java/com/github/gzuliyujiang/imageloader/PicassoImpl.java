@@ -19,9 +19,6 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.OkHttp3Downloader;
@@ -39,21 +36,33 @@ import java.util.concurrent.Executors;
  * @since 2021/3/9 20:25
  */
 final class PicassoImpl implements IImageLoader {
-    private Context context;
     private File cacheDir;
     private Picasso picasso;
     private UUID requestTag;
 
     @Override
-    public void setup(@NonNull Application application) {
-        this.context = application;
+    public void setup(Application application) {
+        if (application == null) {
+            return;
+        }
         boolean mounted = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
         cacheDir = new File(mounted ? application.getExternalCacheDir() : application.getCacheDir(), "picasso");
     }
 
     @Override
-    public <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder) {
+    public <T> void display(ImageView imageView, T imageSource, int placeholder) {
+        if (imageView == null) {
+            return;
+        }
+        if (imageSource == null) {
+            imageView.setImageResource(placeholder);
+            return;
+        }
+        if (cacheDir == null) {
+            return;
+        }
         RequestCreator requestCreator;
+        Context context = imageView.getContext();
         picasso = new com.squareup.picasso.Picasso.Builder(context)
                 .downloader(new OkHttp3Downloader(cacheDir))
                 .memoryCache(new LruCache(context))
@@ -76,11 +85,17 @@ final class PicassoImpl implements IImageLoader {
 
     @Override
     public void pause() {
+        if (picasso == null) {
+            return;
+        }
         picasso.pauseTag(requestTag);
     }
 
     @Override
     public void resume() {
+        if (picasso == null) {
+            return;
+        }
         picasso.resumeTag(requestTag);
     }
 
@@ -91,6 +106,9 @@ final class PicassoImpl implements IImageLoader {
 
     @Override
     public void clearCache() {
+        if (cacheDir == null) {
+            return;
+        }
         Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
             public void run() {
@@ -101,6 +119,9 @@ final class PicassoImpl implements IImageLoader {
 
     @Override
     public long getCacheSize() {
+        if (cacheDir == null) {
+            return 0;
+        }
         return Utils.obtainLength(cacheDir);
     }
 

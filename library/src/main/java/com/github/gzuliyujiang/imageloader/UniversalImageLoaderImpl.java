@@ -16,9 +16,6 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -35,7 +32,10 @@ import java.io.File;
 final class UniversalImageLoaderImpl implements IImageLoader {
 
     @Override
-    public void setup(@NonNull Application application) {
+    public void setup(Application application) {
+        if (application == null) {
+            return;
+        }
         ImageLoader imageLoader = ImageLoader.getInstance();
         if (!imageLoader.isInited()) {
             //IllegalStateException: ImageLoader must be init with configuration before using
@@ -44,7 +44,14 @@ final class UniversalImageLoaderImpl implements IImageLoader {
     }
 
     @Override
-    public <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder) {
+    public <T> void display(ImageView imageView, T imageSource, int placeholder) {
+        if (imageView == null) {
+            return;
+        }
+        if (imageSource == null) {
+            imageView.setImageResource(placeholder);
+            return;
+        }
         DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
         builder.bitmapConfig(Bitmap.Config.RGB_565);
         builder.cacheInMemory(true);

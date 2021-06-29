@@ -20,9 +20,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -41,13 +38,20 @@ final class GlideImpl implements IImageLoader {
     private Context context;
 
     @Override
-    public void setup(@NonNull Application application) {
+    public void setup(Application application) {
         this.context = application;
     }
 
     @SuppressLint("CheckResult")
     @Override
-    public <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder) {
+    public <T> void display(ImageView imageView, T imageSource, int placeholder) {
+        if (imageView == null) {
+            return;
+        }
+        if (imageSource == null) {
+            imageView.setImageResource(placeholder);
+            return;
+        }
         RequestBuilder<?> builder = Glide.with(imageView).asBitmap();
         if (imageSource instanceof Integer) {
             builder.load((Integer) imageSource);
@@ -66,16 +70,25 @@ final class GlideImpl implements IImageLoader {
 
     @Override
     public void pause() {
+        if (context == null) {
+            return;
+        }
         Glide.with(context).pauseRequests();
     }
 
     @Override
     public void resume() {
+        if (context == null) {
+            return;
+        }
         Glide.with(context).resumeRequests();
     }
 
     @Override
     public void cleanMemory() {
+        if (context == null) {
+            return;
+        }
         new Handler(Looper.getMainLooper()).post(() -> {
             //必须运行在UI线程
             Glide.get(context).clearMemory();
@@ -85,6 +98,9 @@ final class GlideImpl implements IImageLoader {
 
     @Override
     public void clearCache() {
+        if (context == null) {
+            return;
+        }
         cleanMemory();
         Executors.newSingleThreadExecutor().execute(() -> {
             //必须运行在后台线程
@@ -94,6 +110,9 @@ final class GlideImpl implements IImageLoader {
 
     @Override
     public long getCacheSize() {
+        if (context == null) {
+            return 0;
+        }
         File directory = Glide.getPhotoCacheDir(context);
         return Utils.obtainLength(directory);
     }

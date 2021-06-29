@@ -16,9 +16,6 @@ package com.github.gzuliyujiang.imageloader;
 import android.app.Application;
 import android.widget.ImageView;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-
 /**
  * 面向接口编程，使用接口对各模块进行解耦，增强对第三方库的管控，不强依赖某些三方库，使得三方库可自由搭配组装。
  * <p>
@@ -35,9 +32,9 @@ import androidx.annotation.NonNull;
  */
 public interface IImageLoader {
 
-    void setup(@NonNull Application application);
+    void setup(Application application);
 
-    <T> void display(@NonNull ImageView imageView, @NonNull T imageSource, @DrawableRes int placeholder);
+    <T> void display(ImageView imageView, T imageSource, int placeholder);
 
     void pause();
 
